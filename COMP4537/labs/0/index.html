@@ -7,16 +7,16 @@
 
     <link rel="stylesheet" href="css/style.css">
 
-    <title>4537 lab0 Saeyoung P.</title>
+    <title>Memory game</title>
 </head>
 
 <body>
 
     <div class="question">
-        How many buttons to create? <br>
+        <span id="question"></span> <br>
 
-        <input name="nbox" id="num" type="number" placeholder="Number 3 ~ 7 only" />
-        <button onclick="validateNum(num.value)">Go!</button>
+        <input name="boxNum" id="num" type="number" placeholder="Number 3 ~ 7 only" />
+        <button id="goBtn">Go!</button>
     </div>
 
     <div class="display">
@@ -25,8 +25,7 @@
         </div>
     </div>
 
-
-    <script src="./js/script.js"></script>
+    <script type="module" src="./js/script.js"></script>
 </body>
 
 </html>
