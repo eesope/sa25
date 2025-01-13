@@ -16,7 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
 const startBtn = document.getElementById("startBtn");
 startBtn.addEventListener("click", () => {
     const num = document.getElementById("num").value;
-    gameStart(num);
+    const game = new Game(num);
+    game.start();
 })
 
 const colorArray = ["d00000", "ffba08", "3f88c5", "fa3e16", "136f63", "855194", "7f5539"]
@@ -39,13 +40,9 @@ class BlockBtn {
         this.domElement.hide = this.hide;
     }
 
-    addEventListener(event, callback) {
-        this.domElement.addEventListener(event, callback);
-    }
-
-    getRandomCoor(element) {
+    getRandomCoor() {
         const btnContainer = DISPLAY.getBoundingClientRect();
-        const elementRect = element.domElement.getBoundingClientRect();
+        const elementRect = this.domElement.getBoundingClientRect();
 
         const maxX = btnContainer.width - elementRect.width;
         const maxY = btnContainer.height - elementRect.height;
@@ -55,118 +52,120 @@ class BlockBtn {
     }
 }
 
-function gameStart(num) {
-    if (validateNum(num)) {
-        const userMem = [];
-        let buttons = makeBBs(num);
-        let shuffledBtns = shuffleOrders(buttons);
+class Game {
+    constructor(num) {
+        this.num = num;
+        this.userMem = [];
+        this.buttons = this.makeBBs(num);
+        this.shuffledBtns = this.shuffleOrders(this.buttons);
+    }
 
-        paintBtns(shuffledBtns);
+    start() {
+        this.paintBtns(this.shuffledBtns);
 
-        const delayTime = num * 1000;
+        const delayTime = this.num * 1000;
         setTimeout(() => {
             DISPLAY.innerHTML = "";
             let counter = 0;
 
             const interval = setInterval(() => {
                 counter++;
-                if (counter > num) {
-                    shuffledBtns.forEach(btn => {
+                if (counter >= this.num) {
+                    this.shuffledBtns.forEach(btn => {
                         btn.domElement.textContent = "";
                     });
-                    clearInterval(interval)
-                    mixDisp(shuffledBtns)
-
+                    clearInterval(interval);
+                    this.mixDisp();
                 } else {
-                    mixDisp(shuffledBtns);
+                    this.mixDisp();
                 }
             }, 2000);
+
         }, delayTime);
 
-
+        // user input compare with answer
         DISPLAY.addEventListener("click", (e) => {
             if (e.target.tagName.toLowerCase() == 'button') {
                 const clickedBtn = e.target;
-                userMem.push(clickedBtn.style.backgroundColor);
+                this.userMem.push(clickedBtn.style.backgroundColor);
 
-                if (userMem.length == shuffledBtns.length) {
-                    compareMem(userMem, shuffledBtns);
+                if (this.userMem.length === this.shuffledBtns.length) {
+                    const memoryTest = new MemoryTest(this.shuffledBtns);
+                    memoryTest.compareMem(this.userMem);
                 }
             }
         });
-
-    } else {
-        alert(UserMsg.validateNum);
-        location.reload()
-    }
-}
-
-function validateNum(num) {
-    if (num > 2 && num < 8) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-function makeBBs(num) {
-    const btnArr = [];
-    for (let i = 0; i < num; i++) {
-        const newBtn = new BlockBtn(colorArray[i], i);
-        btnArr[i] = newBtn
-    }
-    return btnArr;
-}
-
-function shuffleOrders(btnArr) {
-    let currLen = btnArr.length;
-    let temp;
-    while (currLen) {
-        let randomIndex = Math.floor(Math.random() * currLen--);
-        temp = btnArr[currLen].order;
-        btnArr[currLen].order = btnArr[randomIndex].order;
-        btnArr[randomIndex].order = temp;
-    }
-    // update shuffled order
-    btnArr.forEach(btn => {
-        btn.domElement.textContent = btn.order;
-    });
-    return btnArr;
-}
-
-function paintBtns(btnArr) {
-    btnArr.sort((a, b) => a.order - b.order)
-    btnArr.forEach((btn) => {
-        btn.domElement.textContent = btn.order;
-        DISPLAY.appendChild(btn.domElement);
-    });
-}
-
-function mixDisp(btnArr) {
-    btnArr.forEach(btn => {
-        btn.shuffleBB(btn.getRandomCoor(btn));
-        DISPLAY.appendChild(btn.domElement);
-    });
-}
-
-function compareMem(userMem, shuffledBtns) {
-    const shuffledColors = shuffledBtns.map(btn => btn.color);
-    if (JSON.stringify(userMem) === JSON.stringify(shuffledColors)) {
-        alert(UserMsg.correct);
-    } else {
-        alert(UserMsg.incorrect);
     }
 
-    shuffledBtns.forEach(btn => {
-        if (btn.domElement) {
-            btn.domElement.textContent = btn.order;
-        } else {
-            console.error("btn.domElement is undefined", btn);
+    validateNum(num) {
+        return num > 2 && num < 8;
+    }
+
+    makeBBs(num) {
+        const btnArr = [];
+        for (let i = 0; i < num; i++) {
+            const newBtn = new BlockBtn(colorArray[i], i);
+            btnArr[i] = newBtn;
         }
-    });
+        return btnArr;
+    }
 
-    paintBtns(shuffledBtns);
+    // update shuffled order
+    shuffleOrders(btnArr) {
+        let currLen = btnArr.length;
+        let temp;
+        while (currLen) {
+            let randomIndex = Math.floor(Math.random() * currLen--);
+            temp = btnArr[currLen].order;
+            btnArr[currLen].order = btnArr[randomIndex].order;
+            btnArr[randomIndex].order = temp;
+        }
+        btnArr.forEach(btn => {
+            btn.domElement.textContent = btn.order;
+        });
+        return btnArr;
+    }
+
+    paintBtns(btnArr) {
+        btnArr.sort((a, b) => a.order - b.order);
+        btnArr.forEach((btn) => {
+            DISPLAY.appendChild(btn.domElement);
+        });
+    }
+
+    mixDisp() {
+        this.shuffledBtns.forEach(btn => {
+            const coord = btn.getRandomCoor();
+            btn.shuffleBB(coord);
+            DISPLAY.appendChild(btn.domElement);
+        });
+    }
 }
 
+class MemoryTest {
+    constructor(shuffledBtns) {
+        this.shuffledBtns = shuffledBtns;
+        this.userMem = [];
+    }
 
+    compareMem(userMem) {
+        const shuffledColors = this.shuffledBtns.map(btn => btn.color);
+        if (JSON.stringify(userMem) === JSON.stringify(shuffledColors)) {
+            alert(UserMsg.correct);
+        } else {
+            alert(UserMsg.incorrect);
+        }
 
+        this.shuffledBtns.forEach(btn => {
+            btn.domElement.textContent = btn.order; // reset the text
+        });
+
+        this.paintBtns(this.shuffledBtns);
+    }
+
+    paintBtns(btnArr) {
+        btnArr.forEach((btn) => {
+            DISPLAY.appendChild(btn.domElement);
+        });
+    }
+}
