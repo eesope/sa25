@@ -157,11 +157,15 @@ function compareMem(userMem, shuffledBtns) {
         alert(UserMsg.incorrect);
     }
 
-    btnArr.forEach(btn => {
-        btn.textContent(btn[i])
+    shuffledBtns.forEach(btn => {
+        if (btn.domElement) {
+            btn.domElement.textContent = btn.order;
+        } else {
+            console.error("btn.domElement is undefined", btn);
+        }
     });
 
-    paintB(shuffledBtns);
+    paintBtns(shuffledBtns);
 }
 
 
