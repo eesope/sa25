@@ -1,5 +1,7 @@
 import UserMsg from "../lang/messages/en/user.js";
 
+// Codes made with the help of chatGPT, Stack Overflow
+
 // painting page with messages for users
 document.addEventListener("DOMContentLoaded", () => {
     const inputLabel = document.getElementById("inputLabel");
@@ -14,38 +16,80 @@ document.addEventListener("DOMContentLoaded", () => {
 const startBtn = document.getElementById("startBtn");
 startBtn.addEventListener("click", () => {
     const num = document.getElementById("num").value;
-    validateNum(num);
+    gameStart(num);
 })
 
 const colorArray = ["d00000", "ffba08", "3f88c5", "fa3e16", "136f63", "855194", "7f5539"]
-const btnArr = [];
 
 class MemBtn {
-    constructor(color) {
+    constructor(color, order) {
         this.color = color;
-        // this.shuffleXY = shuffleXY;
+        this.order = order + 1; // from index of array
+        this.domElement = null;
+        this.disabled = true;
+        boxLocation.appendChild(this.domElement);
+        this.domElement.textContent = this.order;
+    }
+
+    createButton(index) {
+        const button = document.createElement("button");
+        button.textContent = index + 1;
+        button.style.backgroundColor = `#${this.color}`;
+        this.domElement = button;
+        return button;
     }
 }
 
-function validateNum(num) {
-    if (num > 2 && num < 8) {
-        console.log(num);
-        makeBtn(num)
+function gameStart(num) {
+    if (validateNum(num)) {
+        let buttons = makeB(num);
+        let shuffledBtns = shuffleB(buttons);
+        const userMem = [];
+        const display = document.getElementById("display")
+
+        paintB(shuffledBtns);
+        mixB(shuffledBtns);
+
+        const delayTime = parseInt(shuffledBtns.length) * 1000;
+        setTimeout(() => {
+            display.innerHTML = "";
+        }, delayTime);
+
+        display.addEventListener("click", (e) => {
+            if (e.target.tagName.toLowerCase() == 'button') {
+                const clickedBtn = e.target;
+                userMem.push(clickedBtn.style.backgroundColor);
+
+                if (userMem.length == shuffledBtns.length) {
+                    compareMem(userMem, shuffledBtns);
+                }
+            }
+        });
+
     } else {
         alert(UserMsg.validateNum);
         location.reload()
     }
 }
 
-function makeBtn(num) {
+function validateNum(num) {
+    if (num > 2 && num < 8) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function makeB(num) {
+    const btnArr = [];
     for (let i = 0; i < num; i++) {
         const newBtn = new MemBtn(colorArray[i]);
         btnArr[i] = newBtn;
     }
-    shuffleBtn(btnArr);
+    return btnArr;
 }
 
-function shuffleBtn(btnArr) {
+function shuffleB(btnArr) {
     let currLen = btnArr.length;
     let temp;
     while (currLen) {
@@ -54,39 +98,64 @@ function shuffleBtn(btnArr) {
         btnArr[currLen] = btnArr[randomIndex];
         btnArr[randomIndex] = temp;
     }
-    paintBtn(btnArr)
+    return btnArr;
 }
 
-// Made with the help of chatGPT
-function paintBtn(btnArr) {
+function paintB(btnArr) {
     const display = document.getElementById("display");
-    for (let i = 0; i < btnArr.length; i++) {
-        const colorBtn = document.createElement("button");
+    btnArr.forEach((btn, i) => {
+        const newBtn = btn.createButton(i);
+        display.appendChild(newBtn);
+    });
+}
 
-        colorBtn.textContent = i + 1;
-        colorBtn.style.backgroundColor = `#${btnArr[i].color}`;
+function mixB(btnArr) {
+    const display = document.getElementById("display");
+    let count = 0;
 
-        display.appendChild(colorBtn);
+    const intervalMix = setInterval(() => {
+        // move to random location
+        btnArr.forEach(btn => {
+
+            // get button size to bound random location
+            const targetBtn = btn.domElement;
+            if (targetBtn) {
+                const btnStyle = getComputedStyle(targetBtn);
+                const btnWidth = parseFloat(btnStyle.width);
+                const btnHeight = parseFloat(btnStyle.height);
+
+                const randomX = Math.random() * (display.offsetWidth - btnWidth);
+                const randomY = Math.random() * (display.offsetHeight - btnHeight);
+
+                targetBtn.style.left = `${randomX}px`;
+                targetBtn.style.top = `${randomY}px`;
+                targetBtn.style.position = "absolute";
+            } else {
+                console.error();
+            }
+        });
+
+        count++;
+        if (count == btnArr.length) {
+            clearInterval(intervalMix);
+        }
+    }, 2000);
+}
+
+function compareMem(userMem, shuffledBtns) {
+    const shuffledColors = shuffledBtns.map(btn => btn.color);
+    if (JSON.stringify(userMem) === JSON.stringify(shuffledColors)) {
+        alert(UserMsg.correct);
+    } else {
+        alert(UserMsg.incorrect);
     }
-    setTimeout(() => {
-        display.innerHTML = "";
-    }, btnArr.length * 1000);
 
-    mixBtn(btnArr);
+    btnArr.forEach(btn => {
+        btn.textContent(btn[i])
+    });
+
+    paintB(shuffledBtns);
 }
-
-function mixBtn(btnArr) {
-    // const canvas = document.getElementById("canvas");
-    // const ctx = canvas.getContext("2d");
-
-    // randomly show divs on 
-
-    setInterval(function () {
-        console.log("len")
-    }, btnArr.length * 1000);
-
-}
-
 
 
 
