@@ -20,42 +20,60 @@ startBtn.addEventListener("click", () => {
 })
 
 const colorArray = ["d00000", "ffba08", "3f88c5", "fa3e16", "136f63", "855194", "7f5539"]
+const DISPLAY = document.getElementById("display")
 
-class MemBtn {
+class BlockBtn {
     constructor(color, order) {
         this.color = color;
         this.order = order + 1; // from index of array
-        this.domElement = null;
-        this.disabled = true;
-        boxLocation.appendChild(this.domElement);
+        this.domElement = document.createElement("button");
+        this.hide = true;
         this.domElement.textContent = this.order;
+        this.domElement.style.backgroundColor = `#${this.color}`;
+
     }
 
-    createButton(index) {
-        const button = document.createElement("button");
-        button.textContent = index + 1;
-        button.style.backgroundColor = `#${this.color}`;
-        this.domElement = button;
-        return button;
+    shuffleBB(coord) {
+        this.domElement.style.position = "absolute";
+        this.domElement.style.left = `${randomX}px`;
+        this.domElement.style.top = `${randomY}px`;
+        this.button.hide = this.hide;
+
+    }
+
+    addEventListener(event, callback) {
+        this.button.addEventListener(event, callback);
+    }
+
+    getRandomCoor(element) {
+        const containerRect = boxLocation.getBoundingClientRect();
+        const elementRect = element.button.getBoundingClientRect();
+
+        const maxX = containerRect.width - elementRect.width;
+        const maxY = containerRect.height - elementRect.height;
+
+        const randomX = Math.floor(Math.random() * maxX);
+        const randomY = Math.floor(Math.random() * maxY);
+
+        return { x: randomX, y: randomY };
     }
 }
 
 function gameStart(num) {
     if (validateNum(num)) {
-        let buttons = makeB(num);
-        let shuffledBtns = shuffleB(buttons);
         const userMem = [];
-        const display = document.getElementById("display")
+        let buttons = makeBBs(num);
+        let shuffledBtns = shuffleOrders(buttons);
 
-        paintB(shuffledBtns);
-        mixB(shuffledBtns);
+        paintBtns(shuffledBtns);
+        mixDisp(shuffledBtns);
 
         const delayTime = parseInt(shuffledBtns.length) * 1000;
         setTimeout(() => {
-            display.innerHTML = "";
+            DISPLAY.innerHTML = "";
         }, delayTime);
 
-        display.addEventListener("click", (e) => {
+        DISPLAY.addEventListener("click", (e) => {
             if (e.target.tagName.toLowerCase() == 'button') {
                 const clickedBtn = e.target;
                 userMem.push(clickedBtn.style.backgroundColor);
@@ -80,66 +98,43 @@ function validateNum(num) {
     }
 }
 
-function makeB(num) {
+function makeBBs(num) {
     const btnArr = [];
     for (let i = 0; i < num; i++) {
-        const newBtn = new MemBtn(colorArray[i]);
-        btnArr[i] = newBtn;
+        const newBtn = new BlockBtn(colorArray[i], i);
+        btnArr[i] = newBtn
     }
     return btnArr;
 }
 
-function shuffleB(btnArr) {
+function shuffleOrders(btnArr) {
     let currLen = btnArr.length;
     let temp;
     while (currLen) {
         let randomIndex = Math.floor(Math.random() * currLen--);
-        temp = btnArr[currLen];
-        btnArr[currLen] = btnArr[randomIndex];
-        btnArr[randomIndex] = temp;
+        temp = btnArr[currLen].order;
+        btnArr[currLen].order = btnArr[randomIndex].order;
+        btnArr[randomIndex].order = temp;
     }
+    // update shuffled order
+    btnArr.forEach(btn => {
+        btn.domElement.textContent = btn.order;
+    });
     return btnArr;
 }
 
-function paintB(btnArr) {
-    const display = document.getElementById("display");
-    btnArr.forEach((btn, i) => {
-        const newBtn = btn.createButton(i);
-        display.appendChild(newBtn);
+function paintBtns(btnArr) {
+    btnArr.sort((a, b) => a.order - b.order)
+    btnArr.forEach((btn) => {
+        btn.domElement.textContent = btn.order;
+        DISPLAY.appendChild(btn.domElement);
     });
 }
 
-function mixB(btnArr) {
-    const display = document.getElementById("display");
-    let count = 0;
-
-    const intervalMix = setInterval(() => {
-        // move to random location
-        btnArr.forEach(btn => {
-
-            // get button size to bound random location
-            const targetBtn = btn.domElement;
-            if (targetBtn) {
-                const btnStyle = getComputedStyle(targetBtn);
-                const btnWidth = parseFloat(btnStyle.width);
-                const btnHeight = parseFloat(btnStyle.height);
-
-                const randomX = Math.random() * (display.offsetWidth - btnWidth);
-                const randomY = Math.random() * (display.offsetHeight - btnHeight);
-
-                targetBtn.style.left = `${randomX}px`;
-                targetBtn.style.top = `${randomY}px`;
-                targetBtn.style.position = "absolute";
-            } else {
-                console.error();
-            }
-        });
-
-        count++;
-        if (count == btnArr.length) {
-            clearInterval(intervalMix);
-        }
-    }, 2000);
+function mixDisp(btnArr) {
+    btnArr.forEach(btn => {
+        btn.shuffleBB(btn.getRandomCoor(btn));
+    });
 }
 
 function compareMem(userMem, shuffledBtns) {
