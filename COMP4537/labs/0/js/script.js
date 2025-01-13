@@ -71,7 +71,12 @@ function gameStart(num) {
             const interval = setInterval(() => {
                 counter++;
                 if (counter > num) {
+                    shuffledBtns.forEach(btn => {
+                        btn.domElement.textContent = "";
+                    });
                     clearInterval(interval)
+                    mixDisp(shuffledBtns)
+
                 } else {
                     mixDisp(shuffledBtns);
                 }
