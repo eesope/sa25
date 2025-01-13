@@ -35,22 +35,22 @@ class BlockBtn {
 
     shuffleBB(coord) {
         this.domElement.style.position = "absolute";
-        this.domElement.style.left = `${randomX}px`;
-        this.domElement.style.top = `${randomY}px`;
-        this.button.hide = this.hide;
+        this.domElement.style.left = `${coord.x}px`;
+        this.domElement.style.top = `${coord.y}px`;
+        this.domElement.hide = this.hide;
 
     }
 
     addEventListener(event, callback) {
-        this.button.addEventListener(event, callback);
+        this.domElement.addEventListener(event, callback);
     }
 
     getRandomCoor(element) {
-        const containerRect = boxLocation.getBoundingClientRect();
-        const elementRect = element.button.getBoundingClientRect();
+        const btnContainer = DISPLAY.getBoundingClientRect();
+        const elementRect = element.domElement.getBoundingClientRect();
 
-        const maxX = containerRect.width - elementRect.width;
-        const maxY = containerRect.height - elementRect.height;
+        const maxX = btnContainer.width - elementRect.width;
+        const maxY = btnContainer.height - elementRect.height;
 
         const randomX = Math.floor(Math.random() * maxX);
         const randomY = Math.floor(Math.random() * maxY);
@@ -66,12 +66,16 @@ function gameStart(num) {
         let shuffledBtns = shuffleOrders(buttons);
 
         paintBtns(shuffledBtns);
-        mixDisp(shuffledBtns);
 
         const delayTime = parseInt(shuffledBtns.length) * 1000;
         setTimeout(() => {
             DISPLAY.innerHTML = "";
+
+            setInterval(() => {
+                mixDisp(shuffledBtns);
+            }, 2000);
         }, delayTime);
+
 
         DISPLAY.addEventListener("click", (e) => {
             if (e.target.tagName.toLowerCase() == 'button') {
@@ -134,6 +138,7 @@ function paintBtns(btnArr) {
 function mixDisp(btnArr) {
     btnArr.forEach(btn => {
         btn.shuffleBB(btn.getRandomCoor(btn));
+        DISPLAY.appendChild(btn.domElement);
     });
 }
 
