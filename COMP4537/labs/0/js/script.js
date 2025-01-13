@@ -30,7 +30,6 @@ class BlockBtn {
         this.hide = true;
         this.domElement.textContent = this.order;
         this.domElement.style.backgroundColor = `#${this.color}`;
-
     }
 
     shuffleBB(coord) {
@@ -38,7 +37,6 @@ class BlockBtn {
         this.domElement.style.left = `${coord.x}px`;
         this.domElement.style.top = `${coord.y}px`;
         this.domElement.hide = this.hide;
-
     }
 
     addEventListener(event, callback) {
@@ -51,10 +49,8 @@ class BlockBtn {
 
         const maxX = btnContainer.width - elementRect.width;
         const maxY = btnContainer.height - elementRect.height;
-
         const randomX = Math.floor(Math.random() * maxX);
         const randomY = Math.floor(Math.random() * maxY);
-
         return { x: randomX, y: randomY };
     }
 }
@@ -67,12 +63,18 @@ function gameStart(num) {
 
         paintBtns(shuffledBtns);
 
-        const delayTime = parseInt(shuffledBtns.length) * 1000;
+        const delayTime = num * 1000;
         setTimeout(() => {
             DISPLAY.innerHTML = "";
+            let counter = 0;
 
-            setInterval(() => {
-                mixDisp(shuffledBtns);
+            const interval = setInterval(() => {
+                counter++;
+                if (counter > num) {
+                    clearInterval(interval)
+                } else {
+                    mixDisp(shuffledBtns);
+                }
             }, 2000);
         }, delayTime);
 
