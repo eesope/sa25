@@ -87,11 +87,12 @@ class Game {
         DISPLAY.addEventListener("click", (e) => {
             if (e.target.tagName.toLowerCase() == 'button') {
                 const clickedBtn = e.target;
-                this.userMem.push(clickedBtn.style.backgroundColor);
+                const button = this.shuffledBtns.find(btn => btn.domElement === clickedBtn);
+                this.userMem.push({ color: button.color, order: button.order });
 
                 if (this.userMem.length === this.shuffledBtns.length) {
-                    const memoryTest = new MemoryTest(this.shuffledBtns);
-                    memoryTest.compareMem(this.userMem);
+                    const memoryTest = new MemoryTest(this.shuffledBtns, this.userMem);
+                    memoryTest.compareMem();
                 }
             }
         });
@@ -143,14 +144,18 @@ class Game {
 }
 
 class MemoryTest {
-    constructor(shuffledBtns) {
+    constructor(shuffledBtns, userMem) {
         this.shuffledBtns = shuffledBtns;
-        this.userMem = [];
+        this.userMem = userMem;
     }
 
-    compareMem(userMem) {
-        const shuffledColors = this.shuffledBtns.map(btn => btn.color);
-        if (JSON.stringify(userMem) === JSON.stringify(shuffledColors)) {
+    compareMem() {
+        const shuffledOrders = this.shuffledBtns.map(btn => ({ color: btn.color, order: btn.order }));
+
+        console.log(this.userMem)
+        console.log(shuffledOrders)
+
+        if (JSON.stringify(this.userMem) === JSON.stringify(shuffledOrders)) {
             alert(UserMsg.correct);
         } else {
             alert(UserMsg.incorrect);
