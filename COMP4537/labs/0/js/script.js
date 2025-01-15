@@ -23,35 +23,6 @@ startBtn.addEventListener("click", () => {
 const colorArray = ["d00000", "ffba08", "3f88c5", "fa3e16", "136f63", "855194", "7f5539"]
 const DISPLAY = document.getElementById("display")
 
-class BlockBtn {
-    constructor(color, order) {
-        this.color = color;
-        this.order = order + 1; // from index of array
-        this.domElement = document.createElement("button");
-        this.hide = true;
-        this.domElement.textContent = this.order;
-        this.domElement.style.backgroundColor = `#${this.color}`;
-    }
-
-    shuffleBB(coord) {
-        this.domElement.style.position = "absolute";
-        this.domElement.style.left = `${coord.x}px`;
-        this.domElement.style.top = `${coord.y}px`;
-        this.domElement.hide = this.hide;
-    }
-
-    getRandomCoor() {
-        const btnContainer = DISPLAY.getBoundingClientRect();
-        const elementRect = this.domElement.getBoundingClientRect();
-
-        const maxX = btnContainer.width - elementRect.width;
-        const maxY = btnContainer.height - elementRect.height;
-        const randomX = Math.floor(Math.random() * maxX);
-        const randomY = Math.floor(Math.random() * maxY);
-        return { x: randomX, y: randomY };
-    }
-}
-
 class Game {
     constructor(num) {
         this.num = num;
@@ -140,6 +111,35 @@ class Game {
             btn.shuffleBB(coord);
             DISPLAY.appendChild(btn.domElement);
         });
+    }
+}
+
+class BlockBtn {
+    constructor(color, order) {
+        this.color = color;
+        this.order = order + 1; // from index of array
+        this.domElement = document.createElement("button");
+        this.hide = true;
+        this.domElement.textContent = this.order;
+        this.domElement.style.backgroundColor = `#${this.color}`;
+    }
+
+    shuffleBB(coord) {
+        this.domElement.style.position = "absolute";
+        this.domElement.style.left = `${coord.x}px`;
+        this.domElement.style.top = `${coord.y}px`;
+        this.domElement.hide = this.hide;
+    }
+
+    getRandomCoor() {
+        const btnContainer = DISPLAY.getBoundingClientRect();
+        const elementRect = this.domElement.getBoundingClientRect();
+
+        const maxX = btnContainer.width - elementRect.width;
+        const maxY = btnContainer.height - elementRect.height;
+        const randomX = Math.floor(Math.random() * maxX);
+        const randomY = Math.floor(Math.random() * maxY);
+        return { x: randomX, y: randomY };
     }
 }
 
