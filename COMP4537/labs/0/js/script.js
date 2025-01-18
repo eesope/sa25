@@ -35,6 +35,8 @@ class Game {
         this.paintBtns(this.shuffledBtns);
 
         const delayTime = this.num * 1000;
+        const intervalTime = 2000;
+        
         setTimeout(() => {
             DISPLAY.innerHTML = "";
             let counter = 0;
@@ -50,7 +52,7 @@ class Game {
                 } else {
                     this.mixDisp();
                 }
-            }, 2000);
+            }, intervalTime);
 
         }, delayTime);
 
