@@ -5,5 +5,7 @@ export default {
     addNotes: "Add",
     delNotes: "Delete",
     wrTitle: "Write Notes",
-    rdTitle: "Read Notes"
+    rdTitle: "Read Notes",
+    timeSaved: "Last saved at",
+    timeUpdated: "Last updated at",
 }
