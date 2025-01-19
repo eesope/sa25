@@ -20,6 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
     loadNotes();
     addBtn.addEventListener("click", addNewNote);
     updateLastSavedTime();
+    // custom event to observe textArea
+    window.addEventListener("noteUpdated", updateLastSavedTime)
 });
 
 function updateLastSavedTime() {
@@ -30,7 +32,7 @@ function updateLastSavedTime() {
 function loadNotes() {
     const notes = JSON.parse(localStorage.getItem("notes") || "{}");
     for (const [time, input] of Object.entries(notes)) {
-        const note = new Note(input, time);
+        const note = new Note(input, time, true);
         note.element;
     }
 }

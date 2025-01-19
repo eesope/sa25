@@ -1,7 +1,8 @@
 export default class Note {
-    constructor(input, time) {
+    constructor(input, time, isWr) {
         this.input = input;
         this.time = time;
+        this.isWr = isWr;
         this.element = this.createElement(); // hold their each DOM element
     }
 
@@ -11,19 +12,34 @@ export default class Note {
 
         const textArea = document.createElement("textarea");
         textArea.value = this.input;
-        textArea.addEventListener("input", () => this.edit(textArea.value));
 
-        const removeBtn = document.createElement("button")
-        removeBtn.textContent = "✖️"
-        removeBtn.addEventListener("click", () => this.remove());
+        if (!this.isWr) {
+            textArea.setAttribute("readonly", "true");
+        }
 
+        textArea.addEventListener("input", () => {
+            if (this.isWr) {
+                this.edit(textArea.value);
+                const updateEvent = new CustomEvent("noteUpdated");
+                window.dispatchEvent(updateEvent);
+            }
+        });
         div.appendChild(textArea);
-        div.appendChild(removeBtn);
+
+        if (this.isWr) {
+            const removeBtn = document.createElement("button")
+            removeBtn.textContent = "✖️"
+            removeBtn.addEventListener("click", () => this.remove());
+            div.appendChild(removeBtn);
+        }
 
         const notesDiv = document.getElementById("notePad");
         const firstNote = notesDiv.firstChild;
-        notesDiv.insertBefore(div, firstNote);
-        div.appendChild(removeBtn);
+        if (firstNote) {
+            notesDiv.insertBefore(div, firstNote);
+        } else {
+            notesDiv.appendChild(div);
+        }
         return div;
     }
 
@@ -31,7 +47,6 @@ export default class Note {
         const notes = JSON.parse(localStorage.getItem("notes") || "{}");
         notes[this.time] = this.input;
         localStorage.setItem("notes", JSON.stringify(notes));
-        updateLastSavedTime();
     }
 
     remove() {
