@@ -6,7 +6,7 @@ import UserMsg from "../lang/messages/en/user.js";
 const title = document.getElementById("title");
 const savingTime = document.getElementById("timeText");
 const backHome = document.getElementById("home");
-const notesDiv = document.getElementById("content");
+const notesDiv = document.getElementById("notePad");
 const addBtn = document.getElementById("add");
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -23,22 +23,22 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function updateLastSavedTime() {
-    const timeSpan = document.querySelector("#timeText span");
-    timeSpan.textContent = `: ${new Date().toLocaleTimeString()}`;
+    const timeSpan = document.querySelector("#time");
+    timeSpan.textContent = `${new Date().toLocaleTimeString()}`;
 }
 
 function loadNotes() {
     const notes = JSON.parse(localStorage.getItem("notes") || "{}");
     for (const [time, input] of Object.entries(notes)) {
         const note = new Note(input, time);
-        notesDiv.appendChild(note.element);
+        note.element;
     }
 }
 
 function addNewNote() {
     const time = Date.now();
     const note = new Note("", time);
-    notesDiv.insertBefore(note.element, addBtn);
+    note.element;
     note.save();
 }
 
@@ -46,7 +46,7 @@ class Note {
     constructor(input, time) {
         this.input = input;
         this.time = time;
-        this.element = this.createElement();
+        this.element = this.createElement(); // hold their each DOM element
     }
 
     createElement() {
@@ -62,6 +62,10 @@ class Note {
         removeBtn.addEventListener("click", () => this.remove());
 
         div.appendChild(textArea);
+        div.appendChild(removeBtn);
+
+        const firstNote = notesDiv.firstChild;
+        notesDiv.insertBefore(div, firstNote);
         div.appendChild(removeBtn);
         return div;
     }
