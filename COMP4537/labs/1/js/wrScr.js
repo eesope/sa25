@@ -39,7 +39,7 @@ function loadNotes() {
 
 function addNewNote() {
     const time = Date.now();
-    const note = new Note("", time);
+    const note = new Note("", time, true);
     note.element;
     note.save();
 }
