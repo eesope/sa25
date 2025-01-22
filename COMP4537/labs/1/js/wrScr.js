@@ -13,9 +13,11 @@ document.addEventListener("DOMContentLoaded", () => {
     title.textContent = UserMsg.wrTitle;
     savingTime.textContent = UserMsg.timeSaved;
 });
+
 backHome.addEventListener("click", () => {
     window.location.assign("../index.html");
 });
+
 document.addEventListener("DOMContentLoaded", () => {
     loadNotes();
     addBtn.addEventListener("click", addNewNote);

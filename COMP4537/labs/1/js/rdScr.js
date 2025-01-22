@@ -7,18 +7,23 @@ import Note from "./Note.js";
 const title = document.getElementById("title");
 const savingTime = document.getElementById("timeText");
 const backHome = document.getElementById("home");
+const notesContainer = document.getElementById("notePad");
 
 document.addEventListener("DOMContentLoaded", () => {
     title.textContent = UserMsg.rdTitle;
     savingTime.textContent = UserMsg.timeUpdated;
-});
-backHome.addEventListener("click", () => {
-    window.location.assign("../index.html");
-});
-document.addEventListener("DOMContentLoaded", () => {
     loadNotes();
     updateLastSavedTime();
 });
+
+backHome.addEventListener("click", () => {
+    window.location.assign("../index.html");
+});
+
+setInterval(() => {
+    updateLastSavedTime()
+    loadNotes()
+}, 2000);
 
 function updateLastSavedTime() {
     const timeSpan = document.querySelector("#time");
@@ -27,6 +32,8 @@ function updateLastSavedTime() {
 
 function loadNotes() {
     const notes = JSON.parse(localStorage.getItem("notes") || "{}");
+    notesContainer.innerHTML = "";
+
     for (const [time, input] of Object.entries(notes)) {
         const note = new Note(input, time, false);
         note.element;
