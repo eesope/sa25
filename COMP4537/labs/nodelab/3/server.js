@@ -7,7 +7,7 @@ const startServer = () => {
     const server = http.createServer((req, res) => {
         const url = req.url;
 
-        if (url.includes('COMP4537/labs/3/')) {
+        if (url.includes('COMP4537/labs/3/getDate')) {
 
             // check ?query
             const queryObject = new URLSearchParams(url.split('?')[1]);
