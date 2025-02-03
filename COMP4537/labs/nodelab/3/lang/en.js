@@ -1,9 +1,11 @@
 const greetingMSG = "Hello %1, What a beautiful day.";
 const BAD_404 = "404: Unable to process the request; check the page link.";
+const getName = "Write your name after the URL such as: url/?name=thename";
+const timeInfo = "Server current date and time is";
 
-const file_part = {
+const RWfile = {
     no_access: `500: Server Error; Unable to access the requested file.`,
-    ok: `Text was processed successfully.`
+    ok: `Following text was processed successfully:`
 }
 
-module.exports = { greetingMSG, BAD_404, file_part };
+module.exports = { greetingMSG, BAD_404, RWfile, getName, timeInfo };

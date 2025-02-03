@@ -1,12 +1,18 @@
 const http = require('http'); // host as http
 const { getDate } = require('./modules/utils.js');
-const { greetingMSG, BAD_404 } = require('./lang/en.js');
+const { greetingMSG, BAD_404, RWfile, getName, timeInfo } = require('./lang/en.js');
+const fs = require('fs');
+const path = require('path');
 
 class Router {
     constructor(req, res) {
         this.req = req;
         this.res = res;
         this.url = req.url;
+        this.query = new URLSearchParams(this.url.split('?')[1]);
+
+        this.fileName = this.url.split('/').pop();
+        this.filePath = path.join(__dirname, this.fileName);
     }
 
     // routing upon url
@@ -28,24 +34,47 @@ class Router {
     }
 
     handleGetDate() {
-        const queryObject = new URLSearchParams(this.url.split('?')[1]);
-        const name = queryObject.get('name') || 'Guest';
+        const name = this.query.get('name') || 'Guest';
         const dateTime = getDate();
-        const resMSG = `${greetingMSG.replace('%1', name)} Server current date and time is ${dateTime}`;
+        const resMSG = `${greetingMSG.replace('%1', name)} ${timeInfo} ${dateTime}`;
 
         this.res.writeHead(200, { 'Content-type': 'text/html' });
-        this.res.write(`<p>Write your name after the URL such as: url/?name=thename</p>`);
+        this.res.write(`<p>${getName}</p>`);
         this.res.end(`<p style="color: blue;">${resMSG}</p>`);
     }
 
     handleReadFile() {
-        this.res.writeHead(200, { 'Content-type': 'text/html' });
-        this.res.end(`<p>File read functionality is not yet implemented.</p>`);
+        fs.readFile(this.filePath, 'utf8', (err, data) => {
+            if (err) {
+                this.res.writeHead(404, { 'Content-type': 'text/html' });
+                this.res.end(`<h1>${RWfile.no_access}</h1> <h2>${this.fileName}</h2>`);
+                return;
+            }
+
+            this.res.writeHead(200, { 'Content-type': 'text/html' });
+            this.res.end(`<pre>${data}</pre>`);
+        });
     }
 
     handleWriteFile() {
-        this.res.writeHead(200, { 'Content-type': 'text/html' });
-        this.res.end(`<p>File write functionality is not yet implemented.</p>`);
+        const text = this.query.get('text');
+
+        if (!text) {
+            this.res.writeHead(400, { 'Content-type': 'text/html' });
+            this.res.end(`<h1>${RWfile.no_access}</h1>`);
+            return;
+        }
+
+        fs.appendFile(this.filePath, text + '\n', (err) => {
+            if (err) {
+                this.res.writeHead(500, { 'Content-type': 'text/html' });
+                this.res.end(`<h1>${RWfile.no_access}</h1>`);
+                return;
+            }
+
+            this.res.writeHead(200, { 'Content-type': 'text/html' });
+            this.res.end(`<h1>${RWfile.ok}</h1> <p>${text}</p>`);
+        });
     }
 
     handle404() {
@@ -55,14 +84,12 @@ class Router {
 }
 
 const startServer = () => {
-
     const server = http.createServer((req, res) => {
         const router = new Router(req, res);
         router.route();
     });
-
     server.listen(8080, () => {
-        console.log("Server is running...");
+        console.log("Ok: server.js");
     });
 };
 
