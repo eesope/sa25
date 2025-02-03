@@ -1,6 +1,6 @@
 'use strict';
 
-const { startServer } = require('./server.js');
+const { startServer } = require('./3/server.js');
 
 // http starting on server module
 startServer();
