@@ -1,5 +1,5 @@
-const https = require('http');
-const url = require('url');
+const https = require('https');
+const url = require('://orca-app-2tnnj.ondigitalocean.app/labs/3/');
 const { getDate } = require('./modules/utils');
 const { greetingMSG } = require('./lang/en.js');
 
