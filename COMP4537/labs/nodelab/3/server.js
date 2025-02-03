@@ -12,6 +12,7 @@ class Router {
         this.query = new URLSearchParams(this.url.split('?')[1]);
 
         this.fileName = this.url.split('/').pop();
+        this.defaultFile = path.join(__dirname, 'file.txt');
         this.filePath = path.join(__dirname, this.fileName);
     }
 
@@ -65,7 +66,7 @@ class Router {
             return;
         }
 
-        fs.appendFile(this.filePath, text + '\n', (err) => {
+        fs.appendFile(this.defaultFile, text + '\n', (err) => {
             if (err) {
                 this.res.writeHead(500, { 'Content-type': 'text/html' });
                 this.res.end(`<h1>${RWfile.no_access}</h1>`);
