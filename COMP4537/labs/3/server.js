@@ -1,24 +1,29 @@
-const https = require('https');
-const url = require('://orca-app-2tnnj.ondigitalocean.app/labs/3/');
+const http = require('http'); // host as http
 const { getDate } = require('./modules/utils');
 const { greetingMSG } = require('./lang/en.js');
 
-const server = https.createServer((req, res) => {
-    const queryObject = url.parse(req.url, true).query;
+const startServer = () => {
 
-    // get name
-    const name = queryObject.name || 'Guest';
+    const server = http.createServer((req, res) => {
+        const url = req.url;
 
-    // get server time
-    const dateTime = getDate();
-    const resMSG = `${greetingMSG.replace('%1', name)} Server current date and time is ${dateTime}`;
+        // check ?query
+        const queryObject = new URLSearchParams(url.split('?')[1]);
+        const name = queryObject.get('name') || 'Guest';
 
-    // res header
-    res.writeHead(200, { 'Content-type': 'text/html' });
-    res.write(`<p>Write your name after the URL such as: url/?name=thename</p>`);
-    res.end(`<p style="color: blue;">${resMSG}</p>`);
-});
+        // get server time
+        const dateTime = getDate();
+        const resMSG = `${greetingMSG.replace('%1', name)} Server current date and time is ${dateTime}`;
 
-server.listen(8080, () => {
-    console.log("Server is running on http://localhost:8080 at the moment.");
-});
+        // res header
+        res.writeHead(200, { 'Content-type': 'text/html' });
+        res.write(`<p>Write your name after the URL such as: url/?name=thename</p>`);
+        res.end(`<p style="color: blue;">${resMSG}</p>`);
+    });
+
+    server.listen(8080, () => {
+        console.log("Server is running...");
+    });
+};
+
+module.exports = { startServer };
