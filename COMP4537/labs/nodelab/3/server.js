@@ -1,5 +1,5 @@
 const http = require('http'); // host as http
-const { getDate } = require('./modules/utils');
+const { getDate } = require('./modules/utils.js');
 const { greetingMSG } = require('./lang/en.js');
 
 const startServer = () => {
