@@ -61,7 +61,7 @@ class Router {
 
         if (!text) {
             this.res.writeHead(400, { 'Content-type': 'text/html' });
-            this.res.end(`<h1>${RWfile.no_access}</h1>`);
+            this.res.end(`<h1>${RWfile.no_text_param}</h1>`);
             return;
         }
 
