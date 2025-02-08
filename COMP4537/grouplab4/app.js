@@ -79,7 +79,7 @@ const handlePost = (req, res) => {
 
 const handleOptions = (_req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     res.writeHead(204); // No Content
     res.end();
@@ -88,6 +88,9 @@ const handleOptions = (_req, res) => {
 
 const startServer = () => {
     const server = http.createServer((req, res) => {
+
+
+
         if(req.method == 'OPTIONS') { // to react preflight req
             handleOptions(req, res);
         } else if (req.method === 'GET' && req.url.includes('/api/definitions')) {
