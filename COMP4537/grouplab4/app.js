@@ -7,9 +7,6 @@
  */
 
 const http = require('http');
-const fs = require('fs'); // file system module
-const path = require('path'); // file path module
-
 const { OK, NOT_OK } = require('./lang/en.js');
 
 let reqNum = 0; // total request#
