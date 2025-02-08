@@ -79,8 +79,8 @@ const startServer = () => {
         }
     });
 
-    server.listen(8080, () => {
-        console.log("Server on 8080");
+    server.listen(80, () => {
+        console.log("Server on 80:http");
     })
 };
 
