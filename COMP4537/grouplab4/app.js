@@ -1,0 +1,90 @@
+/**
+ * Dictionary server
+ * 
+ * POST: create && store the requested word; warning msg if already exist.
+ * GET: retrieving definition of the requested word; 404 if not exist.
+ * also: Total req# && total registered word#
+ */
+
+const http = require('http');
+const fs = require('fs'); // file system module
+const path = require('path'); // file path module
+
+const { OK, NOT_OK } = require('./lang/en.js');
+
+let reqNum = 0; // total request#
+let dictionary = [];
+
+const handleGet = (req, res) => {
+
+    // request looks like: ?word=sth
+    const urlParam = new URLSearchParams(req.url.split('?')[1]);
+    const word = urlParam.get('word');
+
+    const input = dictionary.find(item => item.word == word);
+
+    if (input) {
+        // input word found
+        res.writeHead(200, { 'Content-type': 'application/json' });
+        res.end(JSON.stringify({
+            message: OK.show_word,
+            word: input.word,
+            definition: dictionary.definition,
+            dictionarySize: dictionary.length,
+            total_req: `${OK.total_req} ${reqNum}`
+        }));
+    } else {
+        // input word not found
+        res.writeHead(404, { 'Content-type': 'application/json' });
+        res.end(NOT_OK.word_not_found);
+    }
+}
+
+const handlePost = (req, res) => {
+
+    let body = '';
+    req.on('data', chunk => { // as long as data exist; chunk remain 
+        body += chunk;
+    });
+
+    req.on('end', () => {
+        const { word, definition } = JSON.parse(body);
+        const is_exist = dictionary.find(item => item.word == word);
+
+        if (is_exist) {
+            res.writeHead(400, { 'Content-type': 'application/json' });
+            res.end(NOT_OK.already_exist);
+        } else {
+            // create && store new word
+            dictionary.push({ word, definition });
+            reqNum++;
+
+            res.writeHead(200, { 'Content-type': 'application/json' });
+            res.end(JSON.stringify({
+                message: `${OK.show_new_word}`,
+                word: `${word}`,
+                definition: `${definition}`,
+                dictionarySize: dictionary.length
+            }));
+        }
+    });
+}
+
+const startServer = () => {
+    const server = http.createServer((req, res) => {
+        if (req.method === 'GET' && req.url.includes('/api/definitions')) {
+            handleGet(req, res);
+        } else if (req.method === 'POST' && req.url.includes('/api/definitions')) {
+            handlePost(req, res);
+        } else {
+            res.writeHead(404, {'content-type': 'application/json'});
+            res.end(NOT_OK.page_not_found);
+        }
+    });
+
+    server.listen(8080, () => {
+        console.log("Server on 8080");
+    })
+};
+
+module.exports = { startServer };
