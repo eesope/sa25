@@ -14,6 +14,11 @@ let dictionary = [];
 
 const handleGet = (req, res) => {
 
+    // CORS setting
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
     // request looks like: ?word=sth
     const urlParam = new URLSearchParams(req.url.split('?')[1]);
     const word = urlParam.get('word');
@@ -38,6 +43,11 @@ const handleGet = (req, res) => {
 }
 
 const handlePost = (req, res) => {
+
+    // CORS setting
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     let body = '';
     req.on('data', chunk => { // as long as data exist; chunk remain 
@@ -67,9 +77,20 @@ const handlePost = (req, res) => {
     });
 }
 
+const handleOptions = (_req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.writeHead(204); // No Content
+    res.end();
+};
+
+
 const startServer = () => {
     const server = http.createServer((req, res) => {
-        if (req.method === 'GET' && req.url.includes('/api/definitions')) {
+        if(req.method == 'OPTIONS') { // to react preflight req
+            handleOptions(req, res);
+        } else if (req.method === 'GET' && req.url.includes('/api/definitions')) {
             handleGet(req, res);
         } else if (req.method === 'POST' && req.url.includes('/api/definitions')) {
             handlePost(req, res);
