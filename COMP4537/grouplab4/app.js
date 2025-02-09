@@ -31,7 +31,7 @@ const handleGet = (req, res) => {
         res.end(JSON.stringify({
             message: OK.show_word,
             word: input.word,
-            definition: dictionary.definition,
+            definition: input.definition,
             dictionarySize: dictionary.length,
             total_req: `${OK.total_req} ${reqNum}`
         }));
@@ -88,17 +88,14 @@ const handleOptions = (_req, res) => {
 
 const startServer = () => {
     const server = http.createServer((req, res) => {
-
-
-
-        if(req.method == 'OPTIONS') { // to react preflight req
+        if (req.method == 'OPTIONS') { // to react preflight req
             handleOptions(req, res);
         } else if (req.method === 'GET' && req.url.includes('/api/definitions')) {
             handleGet(req, res);
         } else if (req.method === 'POST' && req.url.includes('/api/definitions')) {
             handlePost(req, res);
         } else {
-            res.writeHead(404, {'content-type': 'application/json'});
+            res.writeHead(404, { 'content-type': 'application/json' });
             res.end(NOT_OK.page_not_found);
         }
     });
