@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COMP4537 Lab5 DB intro</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" defer src="app.js"></script>
+
+</head>
+
+<body>
+
+    <h1>Patient Information</h1>
+
+    <div class="square">
+        <h3 id="entry">Entry</h3>
+        <div id="post">
+            <form id="patientForm">
+                <p><label for="pname">Full Name</label></p>
+                <textarea name="pname" id="pname" wrap="soft"></textarea>
+                <br>
+                <p><label for="dob">Date of Birth</label></p>
+                <input type="date" id="dob" name="dob">
+                <p><input type="submit" value="Submit" id="postInput"></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="square">
+        <h3 id="view">View</h3>
+        <div id="get">
+            <button name="refresh" type="button" id="getBTN">Refresh</button>
+            <div id="plist">
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
